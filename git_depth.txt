@@ -1,0 +1,122 @@
+// git study
+
+// 像创建日志，作者，邮箱这些信息都应该交给版本控制系统来记录。
+git config --global user.name "eilinge"
+git config --global user.email "17601329166@163.com"
+
+// 提交新的patch
+git add readme
+git commit -m "add new readme"
+
+// 下载
+1. git clone https://dpdk.org/dpdk.tar.gz
+2. git clone https://dpdk.org/dpdk.tar.gz new_fileName
+
+// Git 有一个机制让我们可以忽略某些文件(.swp)/!(不包括).不被提交
+vim .gitignore
+
+.swp
+!readme.rs
+
+// 查看仓库的状态 git status
+Changes to be committed  // 通过 git add 后被即将被提交的文件 => git commit 提交
+
+Not Staged  // 被索引过又被修改了的文件
+
+Untracked files  // 新增的文件，Git 根本不知道它的存在
+
+// 有时候执行 add 操作的时候不小心把多余的文件 add 进去, 这时我们需要把它从 staging area 移除出来, 但不能删除文件
+git rm --cached
+
+// 把当前未提交的改动「复制」到另一个地方暂存起来，待要恢复的时候执行 git stash pop 即可
+git stash
+
+// 重命名
+git mv oldfile.txt newfile.txt
+// 用通配符一起批量移动文件。
+git mv *.html src
+
+// 看代码的提交历史
+git log
+
+// 生成新的tag, 并生成新的
+git tag new_tag
+git push --tags
+
+// 有时候提交之后发现漏掉了某些文件, 不用再单独提交一次
+git add new_readMe
+git commit --amend
+
+// 覆盖当前时间 --date
+git commit -m "i work so hard" --date "2019-3-24 11:00:00"
+
+// 本来只想提交一个文件，结果意外地把另一个文件也 add 了，怎么把它搞出来？
+// git reset 可以用来改变 HEAD 的位置或把文件从 staging area 移除出来，但并不会丢失任何的修改
+git reset to_commit_first.rb
+
+// 提交太快，多提交了一个文件怎么办？
+// git reset 可以帮我们把当前的 HEAD 重置到指定的位置，这里是倒数第二个，所以是：HEAD~1。
+// 但我们希望变更还保持在 staging area，不然还得 add 一次挺麻烦，那可以加上 \--soft 参数
+git reset HEAD~1 --soft
+
+// A file has been modified, but you don't want to keep the modification.  Checkout the `config.rb` file from the last commit.
+// 有时候改了一些代码，结果发现这个需求取消了，怎么能快速扔掉所有的变更，回到没有修改之前的状态呢?
+git checkout config.rb
+
+// 为了与别人合作，我们需要把 Git 仓库 push 到远端仓库上去，远端仓库对应就是 remote
+git remote
+
+// 远端仓库除了有名称，还得有一个 URL 地址
+git remote -v
+
+// You need to pull changes from your origin repository
+// 别人提交了代码，我们就要拉到本地来。
+git pull origin master
+
+// Add a remote repository called `origin` with the url https://github.com/githug/githug
+git remote add origin https://github.com/githug/githug
+
+// Your local master branch has diverged from the remote origin/master branch.
+// Rebase your commit onto origin/master and push it to remote.
+git rebase &&　git push
+
+// There have been modifications to the `app.rb` file since your last commit.  Find out which line has changed.
+git diff app.rb
+
+// 快速找到某行代码最后的修改者
+git blame app.rb
+
+// You want to work on a piece of code that has the potential to break things, create the branch test_code.
+git branch realse
+
+// Create and switch to a new branch called my_branch.  You will need to create a branch like you did in the previous level.
+git branch realse && git checkout -b realse
+
+// You need to fix a bug in the version 1.2 of your app. Checkout the tag `v1.2`.
+git checkout v1.2
+
+// 但当存在同名的 tag 和分支时，git 不知道我们究竟是要 checkout 到 tag 还是到分支，它认为分支的优先级更高。
+// 这时就要显式地告诉 git 我们是要切换到 tag。
+git checkout tags/v1.2
+
+// 有时忘记开新的分支，就修改并提交了代码。开分支的时候默认是基于最新的一次提交的，
+// 但我们也可以指定参数使其基于任一次提交。
+git branch test_branch HEAD~1
+
+// You have created too many branches for your project. There is an old branch in your repo called 'delete_me'.
+git branch -d delete_me
+
+// You've made some changes to a local branch and want to share it, but aren't yet ready to merge it with the 'master' branch. 
+// Push only 'test_branch' to the remote repository
+git push origin test_branch
+
+// We have a file in the branch 'feature'; Let's merge it to the master branch.
+git merge feature
+
+// Looks like a new branch was pushed into our remote repository. 
+// Get the changes without merging them with the local repository
+// 当远程仓库有更新，但我们并不想合并到本地仓库，只想把代码拿下来看看，我们会用到 fetch 命令。
+git fetch
+
+// We are using a git rebase workflow and the feature branch is ready to go into master. 
+// Let's rebase the feature branch onto our master branch.

@@ -1,0 +1,85 @@
+// 可以让我们时刻掌握仓库当前的状态,上面的命令告诉我们,readme.txt 被修改过了,但还没有准备提交的修改
+git status
+
+// Git 告诉我们 readme.txt(Changes not staged for commit:) 被修改了,但如果能看看具体修改了什么内容
+git diff readme.txt 
+
+// 版本控制系统肯定有某个命令可以告诉我们历史记录
+git log [--pretty=oneline]
+
+// 上一个版本就是HEAD^(HEAD~1),上上一个版本就是HEAD^^...所以写成 HEAD~100
+git reset --hard HEAD^
+
+// Git 提供了一个命令用来记录你的每一次命令
+git reflog
+
+// 工作区: 本地目录(local dir)
+// git add把文件添加进去,实际上就是把文件修改添加到暂存区;
+// git commit提交更改,实际上就是把暂存区的所有内容提交到当前分支.
+
+// 可以查看工作区和版本库里面最新版本的区别
+git diff HEAD -- readme.txt
+
+// 撤销修改
+    场景1：当你改乱了工作区某个文件的内容,想直接丢弃工作区的修改时,用命令git checkout -- file。
+    场景2：当你不但改乱了工作区某个文件的内容,还添加到了暂存区时,想丢弃修改,分两步,第一步用命令git reset HEAD file,就回到了场景 1,第二步按场景 1 操作。
+    场景3：已经提交了不合适的修改到版本库时,想要撤销本次提交,参考版本回退一节,不过前提是没有推送到远程库。
+
+// 删除文件(git rm --cache)
+    命令git rm用于删除一个文件。如果一个文件已经被提交到版本库，那么你永远不用担心误删，但是要小心，
+    你只能恢复文件到最新版本，你会丢失最近一次提交后你修改的内容
+    git add test.txt
+    git commit -m "add test.txt"
+    rm test.txt
+        1.直接删除stage/test.txt: 
+            git rm test.txt --cache && git commit
+        2.删错了，因为版本库里还有呢，所以可以很轻松地把误删的文件恢复到最新版本:
+            git checkout -- test.txt
+
+// 连接远程库
+    ssh-keygen -t rsa -C "youremail@example.com"
+
+// 关联远程库(git remote [add/remove/v...])
+    要关联一个远程库，使用命令git remote add origin git@server-name:path/repo-name.git;
+    关联后，使用命令git push -f -u origin master第一次推送 master 分支的所有内容;
+    此后，每次本地提交后，只要有必要，就可以使用命令git push origin master推送最新修改;
+
+// HEAD 而是指向当前分支(develop),master 才是指向提交的;创建新分支(develop), 修改文件, 最终合并到master
+    git branch -b develop(HEAD->develop)
+    vim test.txt && git add test.txt && git commit -m "test develop branch"
+    git checkout master
+    git merge develop
+
+// 修复 bug 时，我们会通过创建新的 bug 分支进行修复，然后合并，最后删除；当手头工作没有完成时，
+// 先把工作现场git stash一下，然后去修复 bug，修复后，再git stash pop，回到工作现场
+// 你可以多次 stash，恢复的时候，先用git stash list查看，然后恢复指定的 stash(git stash apply stash@{0})
+
+// 强行删除bransh
+git branch -D(-rf) feature-vulcan
+
+// 多人协作
+    // 查看远程库信息
+    git remote -v
+    // 推送自己的修改；
+    git push origin branch-name
+    // 如果推送失败，则因为远程分支比你的本地更新，需要先用试图合并；
+    git pull
+    // 如果合并有冲突，则解决冲突，并在本地提交；
+    // 没有冲突或者解决掉冲突后，再用推送就能成功！
+    git push origin branch-name
+    // 如果git pull提示“no tracking information”，则说明本地分支和远程分支的链接关系没有创建，
+    git branch --set-upstream branch-name origin/branch-name。
+
+// 标签(tag): 标签不是按时间顺序列出，而是按字母排序的
+    // 创建tag
+    git log --pretty=oneline --abbrev-commit
+    git tag
+    git show v.tag
+    git tag -a v0.1 -m "version 0.1 released" 3628164
+
+    // 操作tag
+    git push origin v1.0
+    // 一次性推送全部尚未推送到远程的本地标签
+    git push origin --tags
+    // 如果标签已经推送到远程，要删除远程标签就麻烦一点，先从本地删除：
+    git tag -d v0.9 &&　git push origin :refs/tags/v0.9
