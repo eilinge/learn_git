@@ -83,3 +83,7 @@ git branch -D(-rf) feature-vulcan
     git push origin --tags
     // 如果标签已经推送到远程，要删除远程标签就麻烦一点，先从本地删除：
     git tag -d v0.9 &&　git push origin :refs/tags/v0.9
+   
+// git clone git@xxx.git 
+    ssh: connect to host github.com port 22: Connection refused
+    https://github.com/micheleg/dash-to-dock.git
